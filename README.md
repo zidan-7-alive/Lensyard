@@ -4,10 +4,6 @@
 
 **A flight recorder for your rooted Android phone. It logs which app opens network connections, so when something looks suspicious (a data spike, battery drain, heat) you can see exactly *who did it* and stop them with one tap.**
 
-Pure shell. No Rust, no extra binaries. Works from the module's own WebUI, so you never need a terminal.
-
-By [zidan-7-alive](https://github.com/zidan-7-alive).
-
 ## Features
 
 - **Records connections per app**: which app, which server, when. Long-lived connections are logged once, not spammed.
