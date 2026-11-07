@@ -74,14 +74,6 @@ module/
 
 Remove the module in your root manager and reboot. Restore your restrictions first (Rules → Restore all) so nothing stays blocked or disabled. Data lives in `/data/adb/whodunit/` and is removed with the module.
 
-## Build the zip yourself
-
-```
-python tools/package.py module --out dist
-```
-
-This validates `module.prop`, script headers and syntax, then writes `dist/Whodunit-vX.Y.Z.zip` with `module.prop` at the root.
-
 ## Contributing
 
 Issues and pull requests are welcome. Keep scripts POSIX `sh` (Android's mksh/toybox), validate every value that reaches a shell command, and make every change undoable.
