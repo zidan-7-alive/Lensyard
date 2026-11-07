@@ -1,0 +1,7 @@
+id=whodunit
+name=Whodunit
+version=v1.3.3
+versionCode=8
+author=zidan-7-alive
+description=Flight recorder for your phone. Logs which app opens network connections, so you can see who did it.
+banner=banner.jpg
