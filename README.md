@@ -78,6 +78,3 @@ Remove the module in your root manager and reboot. Restore your restrictions fir
 
 Issues and pull requests are welcome. Keep scripts POSIX `sh` (Android's mksh/toybox), validate every value that reaches a shell command, and make every change undoable.
 
-## License
-
-MIT, see [LICENSE](LICENSE).
