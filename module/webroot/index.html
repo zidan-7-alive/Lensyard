@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<title>Whodunit</title>
+<title>Lensyard</title>
 <style>
 :root {
   --bg: #120f0d; --card: #1d1815; --card2: #26201c; --ink: #f4ecdf; --mute: #a89b8b;
@@ -129,7 +129,7 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
   box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.65), inset 2px 3px 4px rgba(255,255,255,.7), inset -2px -3px 5px rgba(140,200,255,.5),
     inset 0 0 22px rgba(255,255,255,.12), 0 12px 28px rgba(0,0,0,.4), 0 0 26px rgba(160,200,255,.18); }
 /* bend the light too when the browser supports SVG refraction in backdrop-filter (falls back to the rule above) */
-.dock.drag .lens.refract { -webkit-backdrop-filter: url(#wdLens) blur(.4px) saturate(190%) brightness(1.18); backdrop-filter: url(#wdLens) blur(.4px) saturate(190%) brightness(1.18); }
+.dock.drag .lens.refract { -webkit-backdrop-filter: url(#lyLens) blur(.4px) saturate(190%) brightness(1.18); backdrop-filter: url(#lyLens) blur(.4px) saturate(190%) brightness(1.18); }
 .dock .lens::before { content: ""; position: absolute; left: 16%; right: 16%; top: 3px; height: 30%; border-radius: 50%;
   background: linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,0)); opacity: 0; transition: opacity .25s; }
 .dock.drag .lens::before { opacity: .6; }
@@ -143,8 +143,8 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
 <body>
 <div class="wrap">
   <div class="hero">
-    <img src="banner.jpg" alt="Whodunit">
-    <div class="t"><b>WHODUNIT</b><small>by zidan-7-alive</small></div>
+    <img src="banner.jpg" alt="Lensyard">
+    <div class="t"><b>LENSYARD</b><small>by zidan-7-alive</small></div>
   </div>
 
   <!-- HOME -->
@@ -214,7 +214,7 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
       <div class="btns"><button id="bclear" class="ghost">Clear log</button><button id="brefresh" class="ghost">Refresh now</button></div>
     </section>
     <section class="card about">
-      <b>WHODUNIT</b><br><small>v1.3.3 &middot; by zidan-7-alive</small>
+      <b>LENSYARD</b><br><small>v1.4.0 &middot; by zidan-7-alive</small>
     </section>
   </main>
 </div>
@@ -228,13 +228,13 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
   </div>
   <span class="lens" id="pill"></span>
 </nav>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="wdLens" filterUnits="userSpaceOnUse" x="0" y="0" width="120" height="84" color-interpolation-filters="sRGB"><feImage id="wdMap" x="0" y="0" width="120" height="84" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="80" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="lyLens" filterUnits="userSpaceOnUse" x="0" y="0" width="120" height="84" color-interpolation-filters="sRGB"><feImage id="lyMap" x="0" y="0" width="120" height="84" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="80" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 <div class="toast" id="toast"></div>
 
 <script>
 (function () {
   "use strict";
-  var BASE = "/data/adb/modules/whodunit/whodunit.sh";
+  var BASE = "/data/adb/modules/lensyard/lensyard.sh";
   var PKG_OK = /^[A-Za-z0-9._]+$/;
   var range = 60, counter = 0, autoStarted = false, openPkg = null, tab = "home";
   var state = { paused: false, running: false };
@@ -255,7 +255,7 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
       if (!window.ksu || typeof window.ksu.exec !== "function") {
         resolve({ errno: -1, stdout: "", stderr: "no-bridge" }); return;
       }
-      var cb = "wd_cb_" + Date.now() + "_" + (counter++);
+      var cb = "ly_cb_" + Date.now() + "_" + (counter++);
       window[cb] = function (errno, stdout, stderr) {
         delete window[cb];
         resolve({ errno: errno, stdout: stdout || "", stderr: stderr || "" });
@@ -264,7 +264,7 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
       catch (e) { delete window[cb]; resolve({ errno: -1, stdout: "", stderr: String(e) }); }
     });
   }
-  function wd(args) { return exec("sh " + BASE + " " + args); }
+  function ly(args) { return exec("sh " + BASE + " " + args); }
 
   var toastTimer = null;
   function toast(msg) {
@@ -309,7 +309,7 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
         d[i + 2] = 127; d[i + 3] = 255;
       }
       g.putImageData(img, 0, 0);
-      var url = c.toDataURL("image/png"), f2 = document.getElementById("wdLens"), im = $("wdMap");
+      var url = c.toDataURL("image/png"), f2 = document.getElementById("lyLens"), im = $("lyMap");
       f2.setAttribute("width", W); f2.setAttribute("height", H);
       im.setAttribute("width", W); im.setAttribute("height", H);
       im.setAttribute("href", url); im.setAttributeNS("http://www.w3.org/1999/xlink", "href", url);
@@ -386,7 +386,7 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
     return o;
   }
   async function loadStatus() {
-    var r = await wd("status-kv"), warn = $("swarn");
+    var r = await ly("status-kv"), warn = $("swarn");
     if (r.stderr === "no-bridge") {
       $("stext").textContent = "Open from your root manager";
       $("dot").className = "dot";
@@ -407,14 +407,14 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
     if (s.noawk === "1") { warn.hidden = false; warn.textContent = "No awk tool found on this phone. Recording cannot work."; }
     else warn.hidden = true;
     if (!state.running && !state.paused && !autoStarted && s.noawk !== "1") {
-      autoStarted = true; await wd("start"); return loadStatus();
+      autoStarted = true; await ly("start"); return loadStatus();
     }
     return s;
   }
 
   // ---- suspects ----
   async function loadList() {
-    var list = $("list"), r = await wd("table " + range);
+    var list = $("list"), r = await ly("table " + range);
     if (r.stderr === "no-bridge") { list.replaceChildren(el("div", "empty", "Waiting for the manager...")); return; }
     var rows = lines(r.stdout).map(function (l) { return l.split("\t"); }).filter(function (a) { return a.length >= 6; });
     list.replaceChildren();
@@ -479,7 +479,7 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
   }
 
   async function loadTimeline(pkg, box) {
-    var r = await wd("timeline " + pkg + " " + range);
+    var r = await ly("timeline " + pkg + " " + range);
     var ls = lines(r.stdout).reverse();
     box.replaceChildren();
     if (!ls.length) { box.textContent = "No events."; return; }
@@ -493,7 +493,7 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
 
   async function act(cmd, pkg) {
     if (!PKG_OK.test(pkg)) return;
-    var r = await wd(cmd + " " + pkg);
+    var r = await ly(cmd + " " + pkg);
     var first = (lines(r.stdout)[0] || "").trim();
     if (first === "ok") toast("Done: " + cmd);
     else if (first.indexOf("fail:") === 0) toast(first.slice(5));
@@ -503,7 +503,7 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
 
   // ---- rules ----
   async function loadManaged() {
-    var r = await wd("managed");
+    var r = await ly("managed");
     var rows = lines(r.stdout).map(function (l) { return l.split("\t"); }).filter(function (a) { return a.length >= 2 && PKG_OK.test(a[1]); });
     var box = $("mlist"); box.replaceChildren();
     $("mrestore").hidden = rows.length === 0;
@@ -528,12 +528,12 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
   }
 
   async function setCfg(key, val, label) {
-    var r = await wd("setcfg " + key + " " + val);
+    var r = await ly("setcfg " + key + " " + val);
     toast(r.stdout.indexOf("running=") !== -1 ? label : "Could not save that setting");
     refreshAll();
   }
   async function togglePause(wantPause) {
-    await wd(wantPause ? "pause" : "resume");
+    await ly(wantPause ? "pause" : "resume");
     toast(wantPause ? "Recording paused" : "Recording resumed");
     refreshAll();
   }
@@ -546,12 +546,12 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
   $("thide").addEventListener("change", function (e) { setCfg("HIDE_SYSTEM", e.target.checked ? 1 : 0, e.target.checked ? "Hiding system entries" : "Showing system entries"); });
   $("intsel").addEventListener("change", function (e) { setCfg("INTERVAL", e.target.value, "Scanning every " + e.target.value + "s"); });
   $("sizesel").addEventListener("change", function (e) { setCfg("MAXKB", e.target.value, "Log limit saved"); });
-  $("tlens").addEventListener("change", function (e) { lensOn = e.target.checked; store("wd_lens", lensOn ? "1" : "0"); lensW = 0; movePill(); if (!lensOn) $("pill").classList.remove("refract"); toast(lensOn ? "Lens refraction on" : "Lens refraction off"); });
-  $("tauto").addEventListener("change", function (e) { autoRefresh = e.target.checked; store("wd_auto", autoRefresh ? "1" : "0"); toast(autoRefresh ? "Auto-refresh on" : "Auto-refresh off"); });
+  $("tlens").addEventListener("change", function (e) { lensOn = e.target.checked; store("ly_lens", lensOn ? "1" : "0"); lensW = 0; movePill(); if (!lensOn) $("pill").classList.remove("refract"); toast(lensOn ? "Lens refraction on" : "Lens refraction off"); });
+  $("tauto").addEventListener("change", function (e) { autoRefresh = e.target.checked; store("ly_auto", autoRefresh ? "1" : "0"); toast(autoRefresh ? "Auto-refresh on" : "Auto-refresh off"); });
   $("brefresh").addEventListener("click", function () { refreshAll(); toast("Refreshed"); });
   $("search").addEventListener("input", applySearch);
-  armed($("bclear"), "Tap again to clear", async function () { await wd("clear"); toast("Log cleared"); refreshAll(); });
-  armed($("brestore"), "Tap again to confirm", async function () { await wd("restore-all"); toast("All restrictions removed"); refreshAll(); });
+  armed($("bclear"), "Tap again to clear", async function () { await ly("clear"); toast("Log cleared"); refreshAll(); });
+  armed($("brestore"), "Tap again to confirm", async function () { await ly("restore-all"); toast("All restrictions removed"); refreshAll(); });
   $("chips").addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest(".chip") : null;
     if (!b) return;
@@ -561,9 +561,9 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
     openPkg = null; loadList();
   });
 
-  autoRefresh = store("wd_auto") !== "0";
+  autoRefresh = store("ly_auto") !== "0";
   $("tauto").checked = autoRefresh;
-  lensOn = store("wd_lens") !== "0"; $("tlens").checked = lensOn;
+  lensOn = store("ly_lens") !== "0"; $("tlens").checked = lensOn;
   movePill();
   setTimeout(movePill, 150);
   refreshAll();

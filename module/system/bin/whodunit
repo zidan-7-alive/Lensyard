@@ -1,2 +1,0 @@
-#!/system/bin/sh
-exec sh /data/adb/modules/whodunit/whodunit.sh "$@"

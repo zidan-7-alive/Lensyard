@@ -1,6 +1,6 @@
-<p align="center"><img src="docs/banner.jpg" alt="Whodunit" width="100%"></p>
+<p align="center"><img src="docs/banner.jpg" alt="Lensyard" width="100%"></p>
 
-# Whodunit
+# Lensyard
 
 **A flight recorder for your rooted Android phone. It logs which app opens network connections, so when something looks suspicious (a data spike, battery drain, heat) you can see exactly *who did it* and stop them with one tap.**
 
@@ -32,7 +32,7 @@ Every action is checked after it runs. If your ROM refuses something, you get th
 
 ## Install
 
-1. Download `Whodunit-vX.Y.Z.zip` from the [Releases](../../releases) page (or build it yourself, see below).
+1. Download `Lensyard-vX.Y.Z.zip` from the [Releases](../../releases) page (or build it yourself, see below).
 2. In your root manager open **Module → Install**, pick the zip, then reboot.
 3. Wait about a minute, then open the module's **WebUI**.
 
@@ -42,7 +42,7 @@ Every action is checked after it runs. If your ROM refuses something, you get th
 2. Tap an app to see its timeline and the three actions.
 3. Use **Rules** to undo anything.
 
-Optional terminal command (not required): `su`, then `whodunit who`, `whodunit status`, `whodunit block <package>` and so on.
+Optional terminal command (not required): `su`, then `lensyard who`, `lensyard status`, `lensyard block <package>` and so on.
 
 ## How it works
 
@@ -53,13 +53,13 @@ module/
   service.sh         after boot: re-apply blocks, start the recorder
   recorder.sh        sends a tick every N seconds through a FIFO
   scan.awk           one long-lived awk: reads /proc/net/tcp(6), maps uid -> package, logs new connections
-  whodunit.sh        control script used by the WebUI, Action button and terminal
+  lensyard.sh        control script used by the WebUI, Action button and terminal
   action.sh          Action button report
-  webroot/           the WebUI (static page, talks to whodunit.sh through the manager's bridge)
+  webroot/           the WebUI (static page, talks to lensyard.sh through the manager's bridge)
 ```
 
 - Connections come from `/proc/net/tcp` and `/proc/net/tcp6` (state ESTABLISHED / SYN_SENT). The owning uid is mapped to a package through `/data/system/packages.list`.
-- Log lines: `epoch|uid|package|ip:port|tcp` in `/data/adb/whodunit/events.log`, trimmed to your size limit.
+- Log lines: `epoch|uid|package|ip:port|tcp` in `/data/adb/lensyard/events.log`, trimmed to your size limit.
 - The recorder avoids restarting processes every cycle, which keeps the phone cool. mawk's input buffering is handled automatically.
 - Everything the WebUI sends to the shell is validated (package names, numbers, a whitelist of settings).
 
@@ -72,7 +72,7 @@ module/
 
 ## Uninstall
 
-Remove the module in your root manager and reboot. Restore your restrictions first (Rules → Restore all) so nothing stays blocked or disabled. Data lives in `/data/adb/whodunit/` and is removed with the module.
+Remove the module in your root manager and reboot. Restore your restrictions first (Rules → Restore all) so nothing stays blocked or disabled. Data lives in `/data/adb/lensyard/` and is removed with the module.
 
 ## Contributing
 

@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# Whodunit control script. Used by the WebUI, the action button and the optional terminal command.
+# Lensyard control script. Used by the WebUI, the action button and the optional terminal command.
 MODDIR=${0%/*}
 . "$MODDIR/common.sh"
 mkdir -p "$DATA"
@@ -22,24 +22,24 @@ ipt_ready() {
   command -v iptables >/dev/null 2>&1 || return 1
   for T in iptables ip6tables; do
     command -v $T >/dev/null 2>&1 || continue
-    $T -w -N whodunit_out 2>/dev/null
-    $T -w -C OUTPUT -j whodunit_out 2>/dev/null || $T -w -I OUTPUT 1 -j whodunit_out 2>/dev/null
+    $T -w -N lensyard_out 2>/dev/null
+    $T -w -C OUTPUT -j lensyard_out 2>/dev/null || $T -w -I OUTPUT 1 -j lensyard_out 2>/dev/null
   done
-  iptables -w -C OUTPUT -j whodunit_out 2>/dev/null
+  iptables -w -C OUTPUT -j lensyard_out 2>/dev/null
 }
 block_uid() {
   for T in iptables ip6tables; do
     command -v $T >/dev/null 2>&1 || continue
-    $T -w -C whodunit_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null ||
-      $T -w -I whodunit_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null
+    $T -w -C lensyard_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null ||
+      $T -w -I lensyard_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null
   done
-  iptables -w -C whodunit_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null
+  iptables -w -C lensyard_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null
 }
 unblock_uid() {
   for T in iptables ip6tables; do
     command -v $T >/dev/null 2>&1 || continue
-    while $T -w -C whodunit_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null; do
-      $T -w -D whodunit_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null || break
+    while $T -w -C lensyard_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null; do
+      $T -w -D lensyard_out -m owner --uid-owner "$1" -j REJECT 2>/dev/null || break
     done
   done
 }

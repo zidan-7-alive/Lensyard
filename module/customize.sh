@@ -1,6 +1,6 @@
 #!/system/bin/sh
-ui_print "- Installing Whodunit"
-DATA=/data/adb/whodunit
+ui_print "- Installing Lensyard"
+DATA=/data/adb/lensyard
 mkdir -p "$DATA"
 # Fresh low-power defaults (older versions scanned more often and ran warmer)
 printf 'INTERVAL=15\nMAXKB=1024\nHIDE_SYSTEM=0\n' > "$DATA/config"

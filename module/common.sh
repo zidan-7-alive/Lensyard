@@ -1,7 +1,7 @@
 #!/system/bin/sh
-# Shared settings and helpers for Whodunit
-MODDIR=${MODDIR:-/data/adb/modules/whodunit}
-DATA=${DATA:-/data/adb/whodunit}
+# Shared settings and helpers for Lensyard
+MODDIR=${MODDIR:-/data/adb/modules/lensyard}
+DATA=${DATA:-/data/adb/lensyard}
 LOG=$DATA/events.log
 INTERVAL=15
 MAXKB=1024
