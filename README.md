@@ -78,6 +78,3 @@ Build only: `python tools/package.py module --out dist`.
 
 Issues and pull requests are welcome. Keep scripts POSIX `sh` (Android's mksh/toybox), validate every value that reaches a shell command, and make every change undoable.
 
-## License
-
-MIT, see [LICENSE](LICENSE).
