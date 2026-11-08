@@ -31,7 +31,7 @@ echo "Building $VER (code $CODE)..."
 
 git add -A
 git commit -m "Lensyard $VER" || true
-git push
+git pull --rebase --autostash origin main && git push
 
 awk '/^## /{n++} n==1' CHANGELOG.md | tail -n +2 > .notes.tmp
 if gh release view "$VER" --repo "$REPO" >/dev/null 2>&1; then
@@ -52,5 +52,5 @@ cat > update.json <<JSON
 JSON
 git add update.json
 git commit -m "OTA: $VER" || true
-git push
+git pull --rebase --autostash origin main && git push
 echo "Done. Lensyard $VER is live; phones will offer the update in their root manager."
