@@ -1,151 +1,125 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="amoled">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <title>Lensyard</title>
+<script>try { document.documentElement.setAttribute("data-theme", localStorage.getItem("ly_theme") === "classic" ? "classic" : "amoled"); } catch (e) {}</script>
 <style>
-:root {
-  --bg: #120f0d; --card: #1d1815; --card2: #26201c; --ink: #f4ecdf; --mute: #a89b8b;
-  --accent: #e0a53a; --red: #d2402f; --green: #52d680; --line: rgba(255,255,255,.07);
+/* AMOLED black is the default: true #000 backgrounds so OLED pixels stay off. "Classic" is the earlier warm dark look. */
+:root, html[data-theme="amoled"] {
+  --bg: #000; --card: #08080b; --card2: #0f0f15; --ink: #f2f0f8; --mute: #9a97ab;
+  --accent: #a78bfa; --accent-ink: #0b0716; --red: #ff5a4d; --green: #4ade80; --blue: #5b9dff;
+  --line: rgba(255,255,255,.09); --tile: rgba(255,255,255,.045); --glow: rgba(167,139,250,.30);
   color-scheme: dark;
+}
+html[data-theme="classic"] {
+  --bg: #120f0d; --card: #1d1815; --card2: #26201c; --ink: #f4ecdf; --mute: #a89b8b;
+  --accent: #e0a53a; --accent-ink: #1a1410; --red: #d2402f; --green: #52d680; --blue: #3b82c4;
+  --line: rgba(255,255,255,.07); --tile: rgba(0,0,0,.25); --glow: rgba(160,200,255,.20);
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { background: var(--bg); }
-body { margin: 0; color: var(--ink); min-height: 100vh;
-  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-/* colorful ambient light behind everything, so the glass dock has something to refract */
-body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(38% 26% at 12% 14%, rgba(210,64,47,.42), transparent 70%),
-    radial-gradient(34% 26% at 92% 36%, rgba(59,130,196,.36), transparent 70%),
-    radial-gradient(44% 28% at 28% 70%, rgba(224,165,58,.34), transparent 70%),
-    radial-gradient(36% 24% at 88% 92%, rgba(130,90,200,.30), transparent 70%); }
+body { margin: 0; color: var(--ink); min-height: 100vh; font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+html[data-theme="amoled"] body::before { background: radial-gradient(70% 22% at 50% -4%, rgba(124,77,255,.16), transparent 70%); }
+html[data-theme="classic"] body::before { background:
+  radial-gradient(38% 26% at 12% 14%, rgba(210,64,47,.42), transparent 70%), radial-gradient(34% 26% at 92% 36%, rgba(59,130,196,.36), transparent 70%),
+  radial-gradient(44% 28% at 28% 70%, rgba(224,165,58,.34), transparent 70%), radial-gradient(36% 24% at 88% 92%, rgba(130,90,200,.30), transparent 70%); }
 .wrap { max-width: 640px; margin: 0 auto; padding: calc(12px + env(safe-area-inset-top, 0px)) 12px calc(120px + env(safe-area-inset-bottom, 0px)); }
 
-/* header */
-.hero { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); }
-.hero img { width: 100%; display: block; }
-.hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(18,15,13,.85)); }
-.hero .t { position: absolute; left: 14px; right: 14px; bottom: 10px; z-index: 1; display: flex; align-items: baseline; justify-content: space-between; }
-.hero b { font-size: 22px; letter-spacing: .04em; }
-.hero small { color: var(--mute); }
+.hero { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: #000; }
+.hero img { width: 100%; height: 190px; object-fit: cover; object-position: 26% 50%; display: block; }
+.hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,.55)); pointer-events: none; }
+.hero .by { position: absolute; right: 12px; bottom: 8px; z-index: 1; font-size: 11px; color: rgba(255,255,255,.75); }
 
-/* generic */
-.card { background: linear-gradient(180deg, rgba(40,33,29,.78), rgba(26,21,18,.78)); border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-top: 12px; }
+.card { background: linear-gradient(180deg, var(--card2), var(--card)); border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-top: 12px; }
 h2 { margin: 0 0 10px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
 small, .mute { color: var(--mute); font-size: 12px; }
-button { font: inherit; color: #1a1410; background: var(--accent); border: 0; border-radius: 12px; padding: 9px 14px; font-weight: 700; }
+button { font: inherit; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 12px; padding: 9px 14px; font-weight: 700; }
 button.ghost { background: rgba(255,255,255,.06); color: var(--ink); border: 1px solid var(--line); }
 button.danger { background: var(--red); color: #fff; }
+button.hard { background: var(--blue); color: #fff; }
 button:active { opacity: .7; transform: scale(.98); }
 .btns { display: flex; gap: 8px; flex-wrap: wrap; }
 .warn { color: var(--accent); margin: 10px 0 0; font-size: 13px; }
 .empty { color: var(--mute); padding: 8px 0; font-size: 14px; }
-.page { display: none; }
-.page.on { display: block; animation: fade .25s ease; }
+.page { display: none; } .page.on { display: block; animation: fade .25s ease; }
 @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-/* status */
-.srow { display: flex; align-items: center; gap: 10px; }
-.srow b { font-size: 17px; flex: 1; }
+.srow { display: flex; align-items: center; gap: 10px; } .srow b { font-size: 17px; flex: 1; }
 .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--mute); flex: none; }
-.dot.on { background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 2.4s infinite; }
-.dot.off { background: var(--red); }
-.dot.pause { background: var(--accent); }
+.dot.on { background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 2.4s infinite; } .dot.off { background: var(--red); } .dot.pause { background: var(--accent); }
 @keyframes pulse { 50% { box-shadow: 0 0 2px var(--green); } }
 .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
-.tile { background: rgba(0,0,0,.25); border-radius: 12px; padding: 10px; }
-.tile span { display: block; font-size: 20px; font-weight: 700; }
+.tile { background: var(--tile); border-radius: 12px; padding: 10px; } .tile span { display: block; font-size: 20px; font-weight: 700; }
+.tile.hot span { color: var(--red); } .tile.warm span { color: var(--accent); } .tile.cool span { color: var(--green); }
 
-/* controls */
 .chips { display: flex; gap: 8px; margin-top: 12px; }
 .chip { flex: 1; padding: 8px 4px; font-size: 13px; background: rgba(255,255,255,.05); color: var(--mute); border: 1px solid var(--line); text-align: center; }
-.chip.on { background: var(--accent); color: #1a1410; border-color: var(--accent); }
-.search { width: 100%; margin-top: 12px; font: inherit; color: var(--ink); background: rgba(0,0,0,.3); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; outline: none; }
-.search:focus { border-color: var(--accent); }
+.chip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.search, .inp { width: 100%; font: inherit; color: var(--ink); background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; outline: none; }
+.search { margin-top: 12px; } .search:focus, .inp:focus { border-color: var(--accent); }
 
-/* list */
-.row { border-top: 1px solid var(--line); padding: 11px 0; }
-.row:first-child { border-top: 0; }
+.row { border-top: 1px solid var(--line); padding: 11px 0; } .row:first-child { border-top: 0; }
 .rhead { display: flex; align-items: center; gap: 12px; cursor: pointer; }
 .av { width: 38px; height: 38px; border-radius: 12px; flex: none; display: grid; place-items: center; font-weight: 800; color: #fff; }
-.rmain { flex: 1; min-width: 0; }
-.rtitle { font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.rmain { flex: 1; min-width: 0; } .rtitle { font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .rpkg { color: var(--mute); font-size: 12px; word-break: break-all; }
-.bar { height: 4px; border-radius: 4px; background: rgba(255,255,255,.07); margin-top: 6px; overflow: hidden; }
+.bar { height: 4px; border-radius: 4px; background: rgba(255,255,255,.08); margin-top: 6px; overflow: hidden; }
 .bar i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--red)); }
-.rmeta { text-align: right; flex: none; }
-.rmeta b { font-size: 18px; display: block; }
-.tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; background: var(--red); color: #fff; font-weight: 700; }
-.tag.fz { background: #3b82c4; }
-.tag.lm { background: #8a63d2; }
-.btns button.hard { background: #3b82c4; color: #fff; }
+.rmeta { text-align: right; flex: none; } .rmeta b { font-size: 18px; display: block; }
+.tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; background: var(--red); color: #fff; font-weight: 700; white-space: nowrap; }
+.tag.fz { background: var(--blue); } .tag.lm { background: #8a63d2; } .tag.new { background: var(--accent); color: var(--accent-ink); } .tag.daily { background: var(--blue); } .tag.idle { background: rgba(255,255,255,.12); color: var(--mute); }
 .detail { margin-top: 12px; }
-.tl { background: rgba(0,0,0,.3); border-radius: 12px; padding: 8px 10px; margin-top: 10px; max-height: 220px; overflow-y: auto;
-  font: 12px/1.7 ui-monospace, Menlo, Consolas, monospace; color: var(--mute); }
-.tl div { word-break: break-all; }
-.tl b { color: var(--ink); font-weight: 500; }
+.tl { background: rgba(255,255,255,.04); border-radius: 12px; padding: 8px 10px; margin-top: 10px; max-height: 220px; overflow-y: auto; font: 12px/1.7 ui-monospace, Menlo, Consolas, monospace; color: var(--mute); }
+.tl div { word-break: break-all; } .tl b { color: var(--ink); font-weight: 500; }
 
-/* settings */
 .set { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); }
-.set:first-of-type { border-top: 0; padding-top: 2px; }
-.set .l { flex: 1; min-width: 0; }
-.set .l div { font-weight: 600; }
-select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
-.sw { position: relative; width: 50px; height: 30px; flex: none; }
-.sw input { position: absolute; inset: 0; opacity: 0; margin: 0; width: 100%; height: 100%; z-index: 1; }
-.sw span { position: absolute; inset: 0; border-radius: 99px; background: rgba(255,255,255,.12); transition: background .2s; }
+.set:first-of-type { border-top: 0; padding-top: 2px; } .set .l { flex: 1; min-width: 0; } .set .l div { font-weight: 600; }
+select { font: inherit; color: var(--ink); background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+select option { background: #111; color: #fff; }
+.sw { position: relative; width: 50px; height: 30px; flex: none; } .sw input { position: absolute; inset: 0; opacity: 0; margin: 0; width: 100%; height: 100%; z-index: 1; }
+.sw span { position: absolute; inset: 0; border-radius: 99px; background: rgba(255,255,255,.14); transition: background .2s; }
 .sw span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .25s cubic-bezier(.3,1.4,.5,1); box-shadow: 0 2px 6px rgba(0,0,0,.4); }
-.sw input:checked + span { background: var(--accent); }
-.sw input:checked + span::after { transform: translateX(20px); }
-.about { text-align: center; padding: 18px 10px; }
-.about b { font-size: 18px; letter-spacing: .04em; }
+.sw input:checked + span { background: var(--accent); } .sw input:checked + span::after { transform: translateX(20px); }
+.about { text-align: center; padding: 18px 10px; } .about b { font-size: 18px; letter-spacing: .04em; }
 
-/* Bottom bar, modelled on the root manager's own: a compact, nearly clear glass pill with a thin rim.
-   The selected tab is a soft highlight; while you press and drag it swells into a glass lens that magnifies.
-   (class "glass", not "bar": ".bar" is already the little activity bar in the app list) */
-.dock { position: fixed; left: 0; right: 0; margin: 0 auto; width: min(72vw, 270px); height: 58px;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 20; touch-action: none; user-select: none; -webkit-user-select: none; }
-.dock .glass { position: absolute; left: 0; right: 0; top: 0; bottom: 0; height: auto; margin: 0; overflow: visible; border-radius: 999px;
-  background: rgba(28,28,32,.40);
-  -webkit-backdrop-filter: blur(5px) saturate(150%); backdrop-filter: blur(5px) saturate(150%);
-  border: 1px solid rgba(255,255,255,.24);
-  box-shadow: 0 8px 26px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10); }
+.chart svg { width: 100%; height: auto; display: block; } .chart text { fill: var(--mute); font-size: 9px; }
+.form .f { margin-top: 10px; } .form label.k { display: block; font-size: 12px; color: var(--mute); margin-bottom: 4px; }
+.form .two { display: flex; gap: 8px; } .form .two > * { flex: 1; }
+.ck { display: flex; align-items: center; gap: 10px; margin-top: 10px; } .ck input { width: 20px; height: 20px; accent-color: var(--accent); }
+.dl { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); } .dl:first-child { border-top: 0; }
+.dl .d { width: 10px; height: 10px; border-radius: 50%; flex: none; } .dl .d.ok { background: var(--green); } .dl .d.warn { background: var(--accent); } .dl .d.fail { background: var(--red); }
+.al { border-top: 1px solid var(--line); padding: 10px 0; } .al:first-child { border-top: 0; } .al .h { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; } .al p { margin: 0; font-size: 14px; word-break: break-word; }
+.al.unread .h small::after { content: " •"; color: var(--accent); }
+.bytes { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+/* Bottom bar: compact, nearly clear glass pill. Selected tab = soft highlight; press and drag = glass lens. (".glass", not ".bar": that is the app-list activity bar) */
+.dock { position: fixed; left: 0; right: 0; margin: 0 auto; width: min(94vw, 400px); height: 58px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 20; touch-action: none; user-select: none; -webkit-user-select: none; }
+.dock .glass { position: absolute; left: 0; right: 0; top: 0; bottom: 0; height: auto; margin: 0; overflow: visible; border-radius: 999px; background: rgba(24,24,30,.45);
+  -webkit-backdrop-filter: blur(6px) saturate(150%); backdrop-filter: blur(6px) saturate(150%); border: 1px solid rgba(255,255,255,.24); box-shadow: 0 8px 26px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.10); }
 .dock .tabs { position: relative; display: flex; height: 100%; z-index: 1; }
-.dock .tabs button { flex: 1; position: relative; background: none; border: 0; color: rgba(255,255,255,.68); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  padding: 0; font-size: 11px; font-weight: 600; transition: color .2s; }
-.dock .tabs button.on { color: #fff; }
-.dock svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.dock .tabs button { flex: 1; position: relative; background: none; border: 0; color: rgba(255,255,255,.66); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0; font-size: 10.5px; font-weight: 600; transition: color .2s; }
+.dock .tabs button.on { color: #fff; } .dock svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .dock .tabs button.on svg { fill: rgba(255,255,255,.30); }
-/* the lens: idle = soft highlight on the active tab; pressed = bigger glass bubble */
-.dock .lens { position: absolute; z-index: 2; top: -9px; height: calc(100% + 18px); left: 0; width: 0; border-radius: 999px; pointer-events: none; will-change: transform;
-  background: rgba(255,255,255,.15);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.10);
+.dock .lens { position: absolute; z-index: 2; top: -9px; height: calc(100% + 18px); left: 0; width: 0; border-radius: 999px; pointer-events: none; will-change: transform; background: rgba(255,255,255,.15); box-shadow: inset 0 0 0 1px rgba(255,255,255,.10);
   transition: transform .45s cubic-bezier(.3,1.45,.5,1), width .3s, background .25s, box-shadow .25s; }
 .dock.drag .lens { background: radial-gradient(80% 110% at 30% 0%, rgba(255,255,255,.22), rgba(255,255,255,.03) 55%, rgba(255,255,255,.08));
   -webkit-backdrop-filter: blur(1px) saturate(190%) brightness(1.18); backdrop-filter: blur(1px) saturate(190%) brightness(1.18);
-  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.65), inset 2px 3px 4px rgba(255,255,255,.7), inset -2px -3px 5px rgba(140,200,255,.5),
-    inset 0 0 22px rgba(255,255,255,.12), 0 12px 28px rgba(0,0,0,.4), 0 0 26px rgba(160,200,255,.18); }
-/* bend the light too when the browser supports SVG refraction in backdrop-filter (falls back to the rule above) */
+  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.65), inset 2px 3px 4px rgba(255,255,255,.7), inset -2px -3px 5px rgba(160,140,255,.5), inset 0 0 22px rgba(255,255,255,.12), 0 12px 28px rgba(0,0,0,.5), 0 0 26px var(--glow); }
 .dock.drag .lens.refract { -webkit-backdrop-filter: url(#lyLens) blur(.4px) saturate(190%) brightness(1.18); backdrop-filter: url(#lyLens) blur(.4px) saturate(190%) brightness(1.18); }
-.dock .lens::before { content: ""; position: absolute; left: 16%; right: 16%; top: 3px; height: 30%; border-radius: 50%;
-  background: linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,0)); opacity: 0; transition: opacity .25s; }
+.dock .lens::before { content: ""; position: absolute; left: 16%; right: 16%; top: 3px; height: 30%; border-radius: 50%; background: linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,0)); opacity: 0; transition: opacity .25s; }
 .dock.drag .lens::before { opacity: .6; }
-.badge { position: absolute; top: 4px; left: calc(50% + 3px); right: auto; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 99px; background: var(--red); color: #fff; font-size: 10px; line-height: 16px; text-align: center; }
-
-.toast { position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 30;
-  background: rgba(0,0,0,.85); color: var(--ink); border: 1px solid var(--line); padding: 10px 16px; border-radius: 14px; opacity: 0; pointer-events: none; transition: opacity .2s; max-width: 90%; text-align: center; }
+.badge { position: absolute; top: 4px; left: calc(50% + 3px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 99px; background: var(--red); color: #fff; font-size: 10px; line-height: 16px; text-align: center; }
+.toast { position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 30; background: rgba(0,0,0,.9); color: var(--ink); border: 1px solid var(--line); padding: 10px 16px; border-radius: 14px; opacity: 0; pointer-events: none; transition: opacity .2s; max-width: 90%; text-align: center; word-break: break-all; }
 .toast.show { opacity: 1; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="hero">
-    <img src="banner.jpg" alt="Lensyard">
-    <div class="t"><b>LENSYARD</b><small>by zidan-7-alive</small></div>
-  </div>
+  <div class="hero"><img src="banner.jpg" alt="Lensyard"><span class="by">by zidan-7-alive</span></div>
 
   <!-- HOME -->
   <main id="p-home" class="page on">
@@ -158,64 +132,107 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
       </div>
       <p class="warn" id="swarn" hidden></p>
     </section>
-
     <div class="chips" id="chips">
-      <button class="chip" data-m="10">10 min</button>
-      <button class="chip on" data-m="60">1 hour</button>
-      <button class="chip" data-m="360">6 hours</button>
-      <button class="chip" data-m="1440">24 hours</button>
+      <button class="chip" data-m="10">10 min</button><button class="chip on" data-m="60">1 hour</button>
+      <button class="chip" data-m="360">6 hours</button><button class="chip" data-m="1440">24 hours</button>
     </div>
     <input class="search" id="search" type="search" placeholder="Search apps" autocomplete="off">
+    <section class="card"><h2>Suspects</h2><div id="list"><div class="empty">Loading...</div></div></section>
+  </main>
 
+  <!-- BATTERY -->
+  <main id="p-batt" class="page">
     <section class="card">
-      <h2>Suspects</h2>
-      <div id="list"><div class="empty">Loading...</div></div>
+      <h2>Battery now</h2>
+      <div class="tiles">
+        <div class="tile" id="tlevel"><span id="blevel">-</span><small>level</small></div>
+        <div class="tile" id="ttemp"><span id="btemp">-</span><small>temperature</small></div>
+        <div class="tile"><span id="bstate">-</span><small id="bcur">state</small></div>
+      </div>
     </section>
+    <div class="chips" id="bchips"><button class="chip on" data-h="6">6 hours</button><button class="chip" data-h="24">24 hours</button></div>
+    <section class="card"><h2>Temperature and level</h2><div class="chart" id="chart"><div class="empty">Loading...</div></div>
+      <small id="chartnote">Purple line: temperature. Grey: battery level. Dashed red: your heat alert limit.</small></section>
+    <section class="card"><h2>Apps holding the phone awake (last hour)</h2>
+      <div id="wake"><div class="empty">Loading...</div></div>
+      <small>Estimated from samples. Tap Limit to stop an app running in the background.</small></section>
   </main>
 
   <!-- RULES -->
   <main id="p-rules" class="page">
-    <section class="card">
-      <h2>Restrictions</h2>
-      <p class="mute" style="margin-top:0">Open an app on Home to block its internet or freeze it. Anything you restrict shows up here.</p>
+    <section class="card"><h2>Smart rules</h2>
+      <div id="rlist"></div>
+      <div class="btns" style="margin-top:10px"><button id="bnewrule">New rule</button></div>
+      <div class="form" id="rform" hidden>
+        <div class="f"><label class="k">App (package name)</label><input class="inp" id="rapp" list="rapps" placeholder="com.example.app" autocomplete="off" autocapitalize="off" spellcheck="false"><datalist id="rapps"></datalist></div>
+        <div class="two f"><div><label class="k">Action</label><select id="ract"><option value="block">Block internet</option><option value="limit">Limit background</option></select></div>
+          <div><label class="k">Network</label><select id="rnet"><option value="any">Any</option><option value="wifi">Wi-Fi only</option><option value="mobile">Mobile data only</option></select></div></div>
+        <label class="ck"><input type="checkbox" id="rwin"> Only during these hours</label>
+        <div class="two f" id="rwinbox" hidden><input class="inp" type="time" id="rw1" value="22:00"><input class="inp" type="time" id="rw2" value="07:00"></div>
+        <label class="ck"><input type="checkbox" id="rscr"> Only while the screen is off</label>
+        <label class="ck"><input type="checkbox" id="rcon"> Only if it opens more than</label>
+        <div class="f" id="rconbox" hidden><input class="inp" type="number" id="rconn" min="1" max="9999" value="100"><small>connections in the last hour</small></div>
+        <div class="btns f"><button id="radd">Save rule</button><button id="rcancel" class="ghost">Cancel</button></div>
+      </div>
+    </section>
+    <section class="card"><h2>Restrictions</h2>
+      <p class="mute" style="margin-top:0">Open an app on Home to block, limit or freeze it. Anything you restrict shows up here.</p>
       <div id="mlist"></div>
       <div class="btns" id="mrestore" hidden style="margin-top:10px"><button id="brestore" class="ghost">Restore all</button></div>
     </section>
-    <section class="card">
-      <h2>What do they do?</h2>
+    <section class="card"><h2>What do they do?</h2>
       <div class="set"><div class="l"><div>Block internet</div><small>Adds a firewall rule for the app. Re-applied after every reboot.</small></div></div>
       <div class="set"><div class="l"><div>Limit background</div><small>Stops the app and stops it running in the background. It still opens normally.</small></div></div>
       <div class="set"><div class="l"><div>Freeze (disable)</div><small>Fully disables the app until you unfreeze it. Essential system apps are protected.</small></div></div>
     </section>
   </main>
 
+  <!-- ALERTS -->
+  <main id="p-alerts" class="page">
+    <section class="card"><h2>Alerts</h2><div id="alist"><div class="empty">Loading...</div></div>
+      <div class="btns" style="margin-top:10px"><button id="bareport" class="ghost">Daily report now</button><button id="baclear" class="ghost">Clear all</button></div></section>
+    <div class="chips" id="uchips"><button class="chip on" data-w="today">Sent today</button><button class="chip" data-w="total">Sent in total</button></div>
+    <section class="card"><h2>Data sent per app</h2><div id="ulist"><div class="empty">Loading...</div></div>
+      <small>Counts what each app sends while Lensyard runs. Android cannot attribute incoming data to an app this way.</small></section>
+    <section class="card"><h2>Export</h2><div class="btns"><button id="bexport">Save CSV files</button></div>
+      <p><small>Writes the connection log and data-sent table to your Download folder.</small></p></section>
+  </main>
+
   <!-- SETTINGS -->
   <main id="p-set" class="page">
-    <section class="card">
-      <h2>Recording</h2>
-      <div class="set"><div class="l"><div>Pause recording</div><small>Stops the recorder completely.</small></div>
-        <label class="sw"><input type="checkbox" id="tpause"><span></span></label></div>
+    <section class="card"><h2>Recording</h2>
+      <div class="set"><div class="l"><div>Pause everything</div><small>Stops the recorder, battery sampling, rules and alerts.</small></div><label class="sw"><input type="checkbox" id="tpause"><span></span></label></div>
       <div class="set"><div class="l"><div>Scan every</div><small>Longer means cooler and less battery.</small></div>
         <select id="intsel"><option value="10">10 s</option><option value="15">15 s</option><option value="30">30 s</option><option value="60">60 s</option></select></div>
-      <div class="set"><div class="l"><div>Hide system entries</div><small>Skips low-level system processes.</small></div>
-        <label class="sw"><input type="checkbox" id="thide"><span></span></label></div>
+      <div class="set"><div class="l"><div>Hide system entries</div><small>Skips low-level system processes.</small></div><label class="sw"><input type="checkbox" id="thide"><span></span></label></div>
       <div class="set"><div class="l"><div>Log size limit</div><small>Oldest events are dropped past this.</small></div>
         <select id="sizesel"><option value="512">0.5 MB</option><option value="1024">1 MB</option><option value="2048">2 MB</option></select></div>
     </section>
-    <section class="card">
-      <h2>Display</h2>
-      <div class="set"><div class="l"><div>Lens refraction</div><small>Magnifies and bends light in the bottom lens while you press and drag it. Turn off if it looks odd.</small></div>
-        <label class="sw"><input type="checkbox" id="tlens"><span></span></label></div>
-      <div class="set"><div class="l"><div>Auto-refresh</div><small>Updates this page every 30 seconds.</small></div>
-        <label class="sw"><input type="checkbox" id="tauto"><span></span></label></div>
+    <section class="card"><h2>Battery and heat</h2>
+      <div class="set"><div class="l"><div>Battery sampling</div><small>How often temperature and wakelocks are checked.</small></div>
+        <select id="batsel"><option value="0">Off</option><option value="120">2 min</option><option value="300">5 min</option><option value="600">10 min</option></select></div>
+      <div class="set"><div class="l"><div>Heat alert at</div><small>Alert when the battery stays this hot.</small></div>
+        <select id="heatsel"><option value="40">40 C</option><option value="42">42 C</option><option value="45">45 C</option><option value="48">48 C</option></select></div>
+      <div class="set"><div class="l"><div>Limit the busiest app when hot</div><small>Automatic. Never touches essential system apps.</small></div><label class="sw"><input type="checkbox" id="tautoheat"><span></span></label></div>
     </section>
-    <section class="card">
-      <h2>Data</h2>
-      <div class="btns"><button id="bclear" class="ghost">Clear log</button><button id="brefresh" class="ghost">Refresh now</button></div>
+    <section class="card"><h2>Alerts</h2>
+      <div class="set"><div class="l"><div>System notifications</div><small>Show alerts in your notification shade.</small></div><label class="sw"><input type="checkbox" id="tnotify"><span></span></label></div>
+      <div class="set"><div class="l"><div>New app alerts</div><small>When an app uses the network for the first time.</small></div><label class="sw"><input type="checkbox" id="tnewapp"><span></span></label></div>
+      <div class="set"><div class="l"><div>Daily report</div><small>One summary a day.</small></div>
+        <select id="dailysel"><option value="99">Off</option><option value="8">8:00</option><option value="12">12:00</option><option value="18">18:00</option><option value="20">20:00</option><option value="21">21:00</option><option value="22">22:00</option></select></div>
     </section>
-    <section class="card about">
-      <b>LENSYARD</b><br><small>v1.4.0 &middot; by zidan-7-alive</small>
+    <section class="card"><h2>Display</h2>
+      <div class="set"><div class="l"><div>Theme</div><small>AMOLED black keeps OLED pixels fully off.</small></div>
+        <select id="themesel"><option value="amoled">AMOLED black</option><option value="classic">Classic dark</option></select></div>
+      <div class="set"><div class="l"><div>Lens refraction</div><small>Magnifies and bends light in the bottom lens while you press and drag it.</small></div><label class="sw"><input type="checkbox" id="tlens"><span></span></label></div>
+      <div class="set"><div class="l"><div>Auto-refresh</div><small>Updates the open page every 30 seconds.</small></div><label class="sw"><input type="checkbox" id="tauto"><span></span></label></div>
     </section>
+    <section class="card"><h2>Diagnostics</h2>
+      <p class="mute" style="margin-top:0">Checks what this phone and ROM really support, so you know which features will work.</p>
+      <div class="btns"><button id="bdiag" class="ghost">Run diagnostics</button></div><div id="dlist" style="margin-top:8px"></div></section>
+    <section class="card"><h2>Data</h2><div class="btns"><button id="bclear" class="ghost">Clear log</button><button id="brefresh" class="ghost">Refresh now</button></div></section>
+    <section class="card about"><b>LENSYARD</b><br><small id="aver">by zidan-7-alive</small>
+      <p><small>Updates: your root manager checks GitHub and updates this module for you.</small></p></section>
   </main>
 </div>
 
@@ -223,7 +240,9 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
   <div class="glass"></div>
   <div class="tabs">
     <button class="on" data-t="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</button>
+    <button data-t="batt"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2"/></svg>Battery</button>
     <button data-t="rules"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Rules<span class="badge" id="badge" hidden>0</span></button>
+    <button data-t="alerts"><svg viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>Alerts<span class="badge" id="abadge" hidden>0</span></button>
     <button data-t="set"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Settings</button>
   </div>
   <span class="lens" id="pill"></span>
@@ -235,44 +254,37 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
 (function () {
   "use strict";
   var BASE = "/data/adb/modules/lensyard/lensyard.sh";
-  var PKG_OK = /^[A-Za-z0-9._]+$/;
-  var range = 60, counter = 0, autoStarted = false, openPkg = null, tab = "home";
-  var state = { paused: false, running: false };
+  var PKG_OK = /^[A-Za-z0-9._]+$/, TIME_OK = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
+  var range = 60, counter = 0, autoStarted = false, openPkg = null, tab = "home", battH = 6, usageW = "today";
+  var state = { paused: false, running: false, batSec: 120, heat: 42 };
   var autoRefresh = true;
 
   function $(id) { return document.getElementById(id); }
-  function el(tag, cls, text) {
-    var e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (text !== undefined) e.textContent = text;
-    return e;
-  }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function svgEl(name, attrs) { var e = document.createElementNS("http://www.w3.org/2000/svg", name); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
+  function lines(t) { return t.split("\n").filter(function (l) { return l.trim() !== ""; }); }
+  function ago(m) { m = parseInt(m, 10) || 0; return m < 1 ? "just now" : m < 60 ? m + "m ago" : Math.floor(m / 60) + "h ago"; }
+  function hue(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360; return h; }
+  function niceName(pkg) { if (pkg.indexOf("uid:") === 0) return "System " + pkg.slice(4); var seg = pkg.split(".").pop() || pkg; return seg.charAt(0).toUpperCase() + seg.slice(1); }
+  function fmtBytes(n) { n = +n || 0; if (n < 1024) return n + " B"; if (n < 1048576) return (n / 1024).toFixed(1) + " KB"; if (n < 1073741824) return (n / 1048576).toFixed(1) + " MB"; return (n / 1073741824).toFixed(2) + " GB"; }
+  function fmtWhen(ts) { var d = new Date(ts * 1000), diff = Math.floor(Date.now() / 1000) - ts; if (diff < 60) return "just now"; if (diff < 3600) return Math.floor(diff / 60) + " min ago"; if (diff < 86400) return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); return d.toLocaleDateString([], { month: "short", day: "numeric" }) + " " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
+  function avatar(pkg) { var av = el("div", "av", niceName(pkg).charAt(0)); av.style.background = "hsl(" + hue(pkg) + " 45% 38%)"; return av; }
 
   // ---- root commands through the manager's WebUI bridge ----
   function exec(cmd) {
     return new Promise(function (resolve) {
-      if (!window.ksu || typeof window.ksu.exec !== "function") {
-        resolve({ errno: -1, stdout: "", stderr: "no-bridge" }); return;
-      }
+      if (!window.ksu || typeof window.ksu.exec !== "function") { resolve({ errno: -1, stdout: "", stderr: "no-bridge" }); return; }
       var cb = "ly_cb_" + Date.now() + "_" + (counter++);
-      window[cb] = function (errno, stdout, stderr) {
-        delete window[cb];
-        resolve({ errno: errno, stdout: stdout || "", stderr: stderr || "" });
-      };
-      try { window.ksu.exec(cmd, "{}", cb); }
-      catch (e) { delete window[cb]; resolve({ errno: -1, stdout: "", stderr: String(e) }); }
+      window[cb] = function (errno, stdout, stderr) { delete window[cb]; resolve({ errno: errno, stdout: stdout || "", stderr: stderr || "" }); };
+      try { window.ksu.exec(cmd, "{}", cb); } catch (e) { delete window[cb]; resolve({ errno: -1, stdout: "", stderr: String(e) }); }
     });
   }
   function ly(args) { return exec("sh " + BASE + " " + args); }
+  function firstLine(r) { return (lines(r.stdout)[0] || "").trim(); }
 
   var toastTimer = null;
-  function toast(msg) {
-    var t = $("toast");
-    t.textContent = msg; t.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2200);
-  }
+  function toast(msg) { var t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2600); }
   function armed(btn, label, fn) {
     var orig = btn.textContent, timer = null, on = false;
     btn.addEventListener("click", function () {
@@ -280,18 +292,10 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
       else { clearTimeout(timer); on = false; btn.textContent = orig; fn(); }
     });
   }
-  function lines(text) { return text.split("\n").filter(function (l) { return l.trim() !== ""; }); }
-  function ago(m) { m = parseInt(m, 10) || 0; return m < 1 ? "just now" : m < 60 ? m + "m ago" : Math.floor(m / 60) + "h ago"; }
-  function hue(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360; return h; }
-  function niceName(pkg) {
-    if (pkg.indexOf("uid:") === 0) return "System " + pkg.slice(4);
-    var seg = pkg.split(".").pop() || pkg;
-    return seg.charAt(0).toUpperCase() + seg.slice(1);
-  }
+  function applyTheme(t) { document.documentElement.setAttribute("data-theme", t === "classic" ? "classic" : "amoled"); }
 
-  // ---- dock ----
+  // ---- bottom bar ----
   var LENSPAD = 8, lensOn = true, lensW = 0, lensH = 0, curX = 0;
-  // Build the "magnifying bubble" map: centre is zoomed, the rim bends a little the other way.
   function buildLens(W, H) {
     var pill = $("pill");
     if (!lensOn) { pill.classList.remove("refract"); return; }
@@ -304,19 +308,15 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
         var r = Math.pow(Math.pow(Math.abs(nx), 3) + Math.pow(Math.abs(ny), 3), 1 / 3), f = 0;
         if (r < 1) f = 0.26 - 0.46 * Math.pow(r, 5);
         var dx = -f * nx * W / 2, dy = -f * ny * H / 2, i = (y * W + x) * 4;
-        d[i] = Math.max(0, Math.min(255, 127.5 + dx * k));
-        d[i + 1] = Math.max(0, Math.min(255, 127.5 + dy * k));
-        d[i + 2] = 127; d[i + 3] = 255;
+        d[i] = Math.max(0, Math.min(255, 127.5 + dx * k)); d[i + 1] = Math.max(0, Math.min(255, 127.5 + dy * k)); d[i + 2] = 127; d[i + 3] = 255;
       }
       g.putImageData(img, 0, 0);
       var url = c.toDataURL("image/png"), f2 = document.getElementById("lyLens"), im = $("lyMap");
-      f2.setAttribute("width", W); f2.setAttribute("height", H);
-      im.setAttribute("width", W); im.setAttribute("height", H);
+      f2.setAttribute("width", W); f2.setAttribute("height", H); im.setAttribute("width", W); im.setAttribute("height", H);
       im.setAttribute("href", url); im.setAttributeNS("http://www.w3.org/1999/xlink", "href", url);
       pill.classList.add("refract");
     } catch (e) { pill.classList.remove("refract"); }
   }
-  // Idle: a soft highlight inset in the active tab. Pressed: full-size lens (scale 1) that magnifies.
   function movePill() {
     var b = document.querySelector("#dock .tabs button.on"), p = $("pill"), dock = $("dock");
     if (!b || b.offsetWidth < 20) return;
@@ -327,127 +327,102 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
     p.style.transform = "translateX(" + curX + "px) scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
     if (w !== lensW || h !== lensH) { lensW = w; lensH = h; buildLens(w, h); }
   }
-  function showTab(t) {
-    if (t === tab && document.querySelector("#p-" + t + ".on")) { movePill(); return; }
+  var loaders = {};
+  function activate(t) {            // switch page + load that page's data
+    if (t === tab) return;
     tab = t;
     var btns = document.querySelectorAll("#dock .tabs button");
     for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-t") === t);
     var pages = document.querySelectorAll(".page");
     for (var j = 0; j < pages.length; j++) pages[j].classList.toggle("on", pages[j].id === "p-" + t);
     window.scrollTo(0, 0);
+    if (loaders[t]) loaders[t]();
   }
-  // Tap a tab, or press and drag the glass lens across them (it follows your finger, then snaps).
+  function showTab(t) { activate(t); movePill(); }
   function initDock() {
     var dock = $("dock"), pill = $("pill"), dragging = false;
     function btns() { return dock.querySelectorAll(".tabs button"); }
     function nearest(clientX) {
       var r = dock.getBoundingClientRect(), x = clientX - r.left, best = null, bd = 1e9, list = btns();
-      for (var i = 0; i < list.length; i++) {
-        var c = list[i].offsetLeft + list[i].offsetWidth / 2, d = Math.abs(c - x);
-        if (d < bd) { bd = d; best = list[i]; }
-      }
+      for (var i = 0; i < list.length; i++) { var c = list[i].offsetLeft + list[i].offsetWidth / 2, d = Math.abs(c - x); if (d < bd) { bd = d; best = list[i]; } }
       return best;
     }
     function follow(clientX) {
       var list = btns(), first = list[0], last = list[list.length - 1], r = dock.getBoundingClientRect();
       var w = pill.offsetWidth || first.offsetWidth + LENSPAD * 2;
-      var x = clientX - r.left - w / 2;
-      x = Math.max(first.offsetLeft - LENSPAD, Math.min(last.offsetLeft - LENSPAD, x));
+      var x = Math.max(first.offsetLeft - LENSPAD, Math.min(last.offsetLeft - LENSPAD, clientX - r.left - w / 2));
       pill.style.transition = "width .2s, background .25s, box-shadow .25s";
       pill.style.transform = "translateX(" + x + "px) scale(1,1)";
-      var n = nearest(clientX);
-      if (n) { var t = n.getAttribute("data-t"); if (t !== tab) { tab = t; for (var i = 0; i < list.length; i++) list[i].classList.toggle("on", list[i] === n);
-        var pages = document.querySelectorAll(".page"); for (var j = 0; j < pages.length; j++) pages[j].classList.toggle("on", pages[j].id === "p-" + t); } }
+      var n = nearest(clientX); if (n) activate(n.getAttribute("data-t"));
     }
     dock.addEventListener("pointerdown", function (e) {
       dragging = true; dock.classList.add("drag");
       try { dock.setPointerCapture(e.pointerId); } catch (x) {}
-      pill.style.transition = "";
-      pill.style.transform = "translateX(" + curX + "px) scale(1,1)";   // swell in place first
+      pill.style.transition = ""; pill.style.transform = "translateX(" + curX + "px) scale(1,1)";
     });
     dock.addEventListener("pointermove", function (e) { if (dragging) follow(e.clientX); });
     function end(e) {
       if (!dragging) return;
       dragging = false; dock.classList.remove("drag");
-      var n = nearest(e.clientX);
-      pill.style.transition = "";
-      if (n) showTab(n.getAttribute("data-t"));
-      movePill();
-      window.scrollTo(0, 0);
+      var n = nearest(e.clientX); pill.style.transition = "";
+      if (n) activate(n.getAttribute("data-t"));
+      movePill(); window.scrollTo(0, 0);
     }
-    dock.addEventListener("pointerup", end);
-    dock.addEventListener("pointercancel", end);
+    dock.addEventListener("pointerup", end); dock.addEventListener("pointercancel", end);
   }
 
   // ---- status + settings ----
-  function parseKV(text) {
-    var o = {};
-    lines(text).forEach(function (l) { var i = l.indexOf("="); if (i > 0) o[l.slice(0, i).trim()] = l.slice(i + 1).trim(); });
-    return o;
-  }
+  function parseKV(text) { var o = {}; lines(text).forEach(function (l) { var i = l.indexOf("="); if (i > 0) o[l.slice(0, i).trim()] = l.slice(i + 1).trim(); }); return o; }
+  function setBadge(id, n) { $(id).hidden = !(n > 0); $(id).textContent = n; }
   async function loadStatus() {
     var r = await ly("status-kv"), warn = $("swarn");
     if (r.stderr === "no-bridge") {
-      $("stext").textContent = "Open from your root manager";
-      $("dot").className = "dot";
+      $("stext").textContent = "Open from your root manager"; $("dot").className = "dot";
       warn.hidden = false; warn.textContent = "This page needs the KernelSU / SukiSU WebUI to run commands.";
       return null;
     }
     var s = parseKV(r.stdout);
-    state.running = s.running === "1"; state.paused = s.paused === "1";
+    state.running = s.running === "1"; state.paused = s.paused === "1"; state.batSec = +s.bat_sec || 0; state.heat = +s.heat_c || 42;
     $("dot").className = "dot " + (state.paused ? "pause" : state.running ? "on" : "off");
     $("stext").textContent = state.paused ? "Paused" : state.running ? "Recording" : "Not running";
     $("bpause").textContent = state.paused ? "Resume" : "Pause";
-    $("sev").textContent = s.events || "0";
-    $("sint").textContent = (s.interval || "-") + "s";
-    $("tpause").checked = state.paused;
-    $("thide").checked = s.hide === "1";
-    if (s.interval) $("intsel").value = s.interval;
-    if (s.maxkb) $("sizesel").value = s.maxkb;
-    if (s.noawk === "1") { warn.hidden = false; warn.textContent = "No awk tool found on this phone. Recording cannot work."; }
-    else warn.hidden = true;
-    if (!state.running && !state.paused && !autoStarted && s.noawk !== "1") {
-      autoStarted = true; await ly("start"); return loadStatus();
-    }
+    $("sev").textContent = s.events || "0"; $("sint").textContent = (s.interval || "-") + "s";
+    $("tpause").checked = state.paused; $("thide").checked = s.hide === "1";
+    if (s.interval) $("intsel").value = s.interval; if (s.maxkb) $("sizesel").value = s.maxkb;
+    if (s.bat_sec !== undefined) $("batsel").value = s.bat_sec; if (s.heat_c) $("heatsel").value = s.heat_c;
+    $("tautoheat").checked = s.auto_heat === "1"; $("tnotify").checked = s.notify === "1"; $("tnewapp").checked = s.newapp === "1";
+    if (s.daily_at !== undefined) $("dailysel").value = s.daily_at;
+    $("aver").textContent = (s.version || "") + " \u00b7 by zidan-7-alive";
+    setBadge("abadge", parseInt(s.unread, 10) || 0);
+    if (s.noawk === "1") { warn.hidden = false; warn.textContent = "No awk tool found on this phone. Recording cannot work."; } else warn.hidden = true;
+    if (!state.running && !state.paused && !autoStarted && s.noawk !== "1") { autoStarted = true; await ly("start"); return loadStatus(); }
     return s;
   }
 
-  // ---- suspects ----
+  // ---- HOME: suspects ----
   async function loadList() {
     var list = $("list"), r = await ly("table " + range);
     if (r.stderr === "no-bridge") { list.replaceChildren(el("div", "empty", "Waiting for the manager...")); return; }
     var rows = lines(r.stdout).map(function (l) { return l.split("\t"); }).filter(function (a) { return a.length >= 6; });
-    list.replaceChildren();
-    $("sapps").textContent = rows.length;
+    list.replaceChildren(); $("sapps").textContent = rows.length;
     if (!rows.length) { list.appendChild(el("div", "empty", "Nothing recorded in this range yet. Give it a few minutes.")); return; }
     var max = Math.max.apply(null, rows.map(function (a) { return parseInt(a[0], 10) || 1; }));
     rows.forEach(function (a) { list.appendChild(buildRow(a, max)); });
     applySearch();
   }
   function applySearch() {
-    var q = $("search").value.trim().toLowerCase();
-    var rows = document.querySelectorAll("#list .row");
+    var q = $("search").value.trim().toLowerCase(), rows = document.querySelectorAll("#list .row");
     for (var i = 0; i < rows.length; i++) rows[i].hidden = q !== "" && rows[i].getAttribute("data-pkg").toLowerCase().indexOf(q) === -1;
   }
-
   function buildRow(a, max) {
     var conns = a[0], pkg = a[1], servers = a[2], last = a[3], blocked = a[4] === "1", frozen = a[5] === "1", limited = a[6] === "1";
     var row = el("div", "row"); row.setAttribute("data-pkg", pkg);
-    var head = el("div", "rhead");
-    var av = el("div", "av", niceName(pkg).charAt(0));
-    av.style.background = "hsl(" + hue(pkg) + " 45% 38%)";
-    var main = el("div", "rmain");
-    var title = el("div", "rtitle", niceName(pkg));
-    if (blocked) title.appendChild(el("span", "tag", "BLOCKED"));
-    if (frozen) title.appendChild(el("span", "tag fz", "FROZEN"));
-    if (limited) title.appendChild(el("span", "tag lm", "LIMITED"));
+    var head = el("div", "rhead"), main = el("div", "rmain"), title = el("div", "rtitle", niceName(pkg));
+    if (blocked) title.appendChild(el("span", "tag", "BLOCKED")); if (frozen) title.appendChild(el("span", "tag fz", "FROZEN")); if (limited) title.appendChild(el("span", "tag lm", "LIMITED"));
     main.appendChild(title); main.appendChild(el("div", "rpkg", pkg));
-    var bar = el("div", "bar"), fill = el("i"); fill.style.width = Math.max(4, Math.round((parseInt(conns, 10) / max) * 100)) + "%";
-    bar.appendChild(fill); main.appendChild(bar);
+    var bar = el("div", "bar"), fill = el("i"); fill.style.width = Math.max(4, Math.round((parseInt(conns, 10) / max) * 100)) + "%"; bar.appendChild(fill); main.appendChild(bar);
     var meta = el("div", "rmeta"); meta.appendChild(el("b", "", conns)); meta.appendChild(el("small", "", servers + " srv, " + ago(last)));
-    head.appendChild(av); head.appendChild(main); head.appendChild(meta);
-    row.appendChild(head);
-
+    head.appendChild(avatar(pkg)); head.appendChild(main); head.appendChild(meta); row.appendChild(head);
     var detail = el("div", "detail"); detail.hidden = openPkg !== pkg; row.appendChild(detail);
     function fillDetail() {
       detail.replaceChildren();
@@ -459,115 +434,223 @@ select { font: inherit; color: var(--ink); background: rgba(0,0,0,.35); border: 
         var b3 = el("button", limited ? "ghost" : "", limited ? "Remove limit" : "Limit background");
         b3.addEventListener("click", function () { act(limited ? "unlimit" : "limit", pkg); });
         var b2 = el("button", frozen ? "ghost" : "hard", frozen ? "Unfreeze" : "Freeze (disable)");
-        if (frozen) b2.addEventListener("click", function () { act("unfreeze", pkg); });
-        else armed(b2, "Tap again to disable", function () { act("freeze", pkg); });
+        if (frozen) b2.addEventListener("click", function () { act("unfreeze", pkg); }); else armed(b2, "Tap again to disable", function () { act("freeze", pkg); });
         btns.appendChild(b1); btns.appendChild(b3); btns.appendChild(b2); detail.appendChild(btns);
       } else detail.appendChild(el("small", "", "System entry, no actions available."));
-      var tl = el("div", "tl", ok ? "Loading timeline..." : "");
-      detail.appendChild(tl);
+      var tl = el("div", "tl", ok ? "Loading timeline..." : ""); detail.appendChild(tl);
       if (ok) loadTimeline(pkg, tl);
     }
     if (!detail.hidden) fillDetail();
     head.addEventListener("click", function () {
       if (openPkg === pkg) { openPkg = null; detail.hidden = true; return; }
-      openPkg = pkg;
-      var all = document.querySelectorAll("#list .detail");
-      for (var i = 0; i < all.length; i++) all[i].hidden = true;
+      openPkg = pkg; var all = document.querySelectorAll("#list .detail"); for (var i = 0; i < all.length; i++) all[i].hidden = true;
       detail.hidden = false; fillDetail();
     });
     return row;
   }
-
   async function loadTimeline(pkg, box) {
-    var r = await ly("timeline " + pkg + " " + range);
-    var ls = lines(r.stdout).reverse();
-    box.replaceChildren();
-    if (!ls.length) { box.textContent = "No events."; return; }
-    ls.forEach(function (l) {
-      var p = l.split("\t"), d = new Date(parseInt(p[0], 10) * 1000), row = el("div");
-      row.appendChild(el("b", "", d.toLocaleTimeString()));
-      row.appendChild(document.createTextNode("  " + (p[1] || "")));
+    var r = await ly("timeline " + pkg + " " + range), ls = lines(r.stdout).reverse();
+    box.replaceChildren(); if (!ls.length) { box.textContent = "No events."; return; }
+    ls.forEach(function (l) { var p = l.split("\t"), d = new Date(parseInt(p[0], 10) * 1000), row = el("div"); row.appendChild(el("b", "", d.toLocaleTimeString())); row.appendChild(document.createTextNode("  " + (p[1] || ""))); box.appendChild(row); });
+  }
+  async function act(cmd, pkg) {
+    if (!PKG_OK.test(pkg)) return;
+    var f = firstLine(await ly(cmd + " " + pkg));
+    if (f === "ok") toast("Done: " + cmd); else if (f.indexOf("fail:") === 0) toast(f.slice(5)); else toast("Could not run '" + cmd + "'");
+    refreshAll(); if (tab === "batt") loadBattery();
+  }
+
+  // ---- BATTERY ----
+  function drawChart(rows) {
+    var box = $("chart"); box.replaceChildren();
+    if (rows.length < 2) { box.appendChild(el("div", "empty", state.batSec ? "Not enough samples yet. One is taken every few minutes." : "Battery sampling is off. Turn it on in Settings.")); return; }
+    var W = 320, H = 150, pl = 30, pr = 8, pt = 10, pb = 18;
+    var ts = rows.map(function (r) { return +r[0]; }), tp = rows.map(function (r) { return (+r[2]) / 10; }), lv = rows.map(function (r) { return +r[1]; });
+    var t0 = ts[0], t1 = ts[ts.length - 1], tmin = Math.floor(Math.min.apply(null, tp) - 1), tmax = Math.ceil(Math.max.apply(null, tp.concat([state.heat])) + 1);
+    function X(t) { return pl + (t - t0) / ((t1 - t0) || 1) * (W - pl - pr); }
+    function Y(v) { return pt + (1 - (v - tmin) / ((tmax - tmin) || 1)) * (H - pt - pb); }
+    function YL(v) { return pt + (1 - v / 100) * (H - pt - pb); }
+    var s = svgEl("svg", { viewBox: "0 0 " + W + " " + H });
+    for (var g = 0; g <= 3; g++) {
+      var gv = tmin + (tmax - tmin) * g / 3, gy = Y(gv);
+      s.appendChild(svgEl("line", { x1: pl, x2: W - pr, y1: gy, y2: gy, stroke: "rgba(255,255,255,.08)", "stroke-width": 1 }));
+      var tx = svgEl("text", { x: 2, y: gy + 3 }); tx.textContent = gv.toFixed(0) + "\u00b0"; s.appendChild(tx);
+    }
+    if (state.heat >= tmin && state.heat <= tmax) s.appendChild(svgEl("line", { x1: pl, x2: W - pr, y1: Y(state.heat), y2: Y(state.heat), stroke: "#ff5a4d", "stroke-width": 1, "stroke-dasharray": "4 3" }));
+    s.appendChild(svgEl("polyline", { points: ts.map(function (t, i) { return X(t).toFixed(1) + "," + YL(lv[i]).toFixed(1); }).join(" "), fill: "none", stroke: "rgba(255,255,255,.35)", "stroke-width": 1.2 }));
+    s.appendChild(svgEl("polyline", { points: ts.map(function (t, i) { return X(t).toFixed(1) + "," + Y(tp[i]).toFixed(1); }).join(" "), fill: "none", stroke: "#a78bfa", "stroke-width": 2, "stroke-linejoin": "round" }));
+    var a = svgEl("text", { x: pl, y: H - 4 }); a.textContent = new Date(t0 * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); s.appendChild(a);
+    var b = svgEl("text", { x: W - pr, y: H - 4, "text-anchor": "end" }); b.textContent = new Date(t1 * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); s.appendChild(b);
+    box.appendChild(s);
+  }
+  async function loadBattery() {
+    var k = parseKV((await ly("batt-kv")).stdout);
+    var lvl = parseInt(k.level, 10), tc = parseInt(k.temp, 10) / 10;
+    $("blevel").textContent = isNaN(lvl) ? "-" : lvl + "%";
+    $("btemp").textContent = isNaN(tc) ? "-" : tc.toFixed(1) + "\u00b0C";
+    $("ttemp").className = "tile " + (isNaN(tc) ? "" : tc >= state.heat ? "hot" : tc >= state.heat - 4 ? "warm" : "cool");
+    $("bstate").textContent = k.bstatus || "-";
+    var cur = parseInt(k.current, 10); $("bcur").textContent = isNaN(cur) || cur === 0 ? "state" : Math.round(Math.abs(cur) / 1000) + " mA " + (cur < 0 ? "out" : "in");
+    var rows = lines((await ly("batt-series " + battH)).stdout).map(function (l) { return l.split("\t"); });
+    drawChart(rows);
+    var w = lines((await ly("wake-top 60")).stdout).map(function (l) { return l.split("\t"); }), box = $("wake"); box.replaceChildren();
+    if (!state.batSec) { box.appendChild(el("div", "empty", "Battery sampling is off. Turn it on in Settings.")); return; }
+    if (!w.length) { box.appendChild(el("div", "empty", "No app is holding the phone awake in the last hour (or no samples yet).")); return; }
+    w.forEach(function (a) {
+      var row = el("div", "row"), head = el("div", "rhead"), main = el("div", "rmain"), title = el("div", "rtitle", niceName(a[1]));
+      main.appendChild(title); main.appendChild(el("div", "rpkg", a[1] + (a[2] ? " \u00b7 " + a[2] : "")));
+      var mins = Math.max(1, Math.round((+a[0]) * state.batSec / 60)), meta = el("div", "rmeta"); meta.appendChild(el("b", "", "~" + mins + " min")); meta.appendChild(el("small", "", a[0] + " samples"));
+      head.appendChild(avatar(a[1])); head.appendChild(main); head.appendChild(meta); row.appendChild(head);
+      if (PKG_OK.test(a[1]) && a[1] !== "android") { var lb = el("button", "ghost", "Limit"); lb.style.marginTop = "8px"; lb.addEventListener("click", function () { act("limit", a[1]); }); row.appendChild(lb); }
       box.appendChild(row);
     });
   }
 
-  async function act(cmd, pkg) {
-    if (!PKG_OK.test(pkg)) return;
-    var r = await ly(cmd + " " + pkg);
-    var first = (lines(r.stdout)[0] || "").trim();
-    if (first === "ok") toast("Done: " + cmd);
-    else if (first.indexOf("fail:") === 0) toast(first.slice(5));
-    else toast("Could not run '" + cmd + "'");
-    refreshAll();
+  // ---- RULES ----
+  function ruleText(a) {
+    var parts = [a[6] === "block" ? "Block internet" + (a[2] === "wifi" ? " on Wi-Fi" : a[2] === "mobile" ? " on mobile data" : "") : "Limit background"];
+    if (a[3] !== "-") parts.push(a[3].replace("-", " to ")); if (a[4] === "off") parts.push("screen off"); if (a[5] !== "-") parts.push("over " + a[5] + "/h");
+    return parts.join(" \u00b7 ");
   }
-
-  // ---- rules ----
+  async function loadRules() {
+    var rows = lines((await ly("rules")).stdout).map(function (l) { return l.split("\t"); }).filter(function (a) { return a.length >= 8; });
+    var box = $("rlist"); box.replaceChildren();
+    if (!rows.length) { box.appendChild(el("div", "empty", "No smart rules yet. Example: block a game on mobile data, or limit an app when the screen is off.")); return; }
+    rows.forEach(function (a) {
+      var row = el("div", "row"), head = el("div", "rhead"), main = el("div", "rmain"), title = el("div", "rtitle", niceName(a[1]));
+      title.appendChild(el("span", a[7] === "1" ? "tag lm" : "tag idle", a[7] === "1" ? "ACTIVE" : "WAITING"));
+      main.appendChild(title); main.appendChild(el("div", "rpkg", a[1])); main.appendChild(el("small", "", ruleText(a)));
+      var del = el("button", "ghost", "Delete"); armed(del, "Tap again", async function () { var f = firstLine(await ly("rule-del " + a[0])); toast(f === "ok" ? "Rule deleted" : f.slice(5)); loadRules(); });
+      head.appendChild(avatar(a[1])); head.appendChild(main); head.appendChild(del); row.appendChild(head); box.appendChild(row);
+    });
+  }
+  async function loadRulesTab() {
+    loadRules(); loadManaged();
+    var rows = lines((await ly("table 1440")).stdout).map(function (l) { return l.split("\t")[1]; }).filter(function (p) { return p && PKG_OK.test(p); });
+    var dl = $("rapps"); dl.replaceChildren(); rows.forEach(function (p) { var o = document.createElement("option"); o.value = p; dl.appendChild(o); });
+  }
+  async function addRule() {
+    var pkg = $("rapp").value.trim();
+    if (!PKG_OK.test(pkg)) { toast("Enter a valid package name"); return; }
+    var act_ = $("ract").value, net = act_ === "block" ? $("rnet").value : "any", win = "-", scr = $("rscr").checked ? "off" : "-", con = "-";
+    if ($("rwin").checked) { var a = $("rw1").value, b = $("rw2").value; if (!TIME_OK.test(a) || !TIME_OK.test(b)) { toast("Pick both times"); return; } win = a + "-" + b; }
+    if ($("rcon").checked) { var n = parseInt($("rconn").value, 10); if (!(n >= 1 && n <= 9999)) { toast("Connections: 1 to 9999"); return; } con = String(n); }
+    var f = firstLine(await ly("rule-add " + [pkg, net, win, scr, con, act_].join(" ")));
+    if (f === "ok") { toast("Rule saved"); $("rform").hidden = true; $("rapp").value = ""; loadRules(); } else toast(f.indexOf("fail:") === 0 ? f.slice(5) : "Could not save the rule");
+  }
   async function loadManaged() {
-    var r = await ly("managed");
-    var rows = lines(r.stdout).map(function (l) { return l.split("\t"); }).filter(function (a) { return a.length >= 2 && PKG_OK.test(a[1]); });
-    var box = $("mlist"); box.replaceChildren();
-    $("mrestore").hidden = rows.length === 0;
-    $("badge").hidden = rows.length === 0; $("badge").textContent = rows.length;
+    var rows = lines((await ly("managed")).stdout).map(function (l) { return l.split("\t"); }).filter(function (a) { return a.length >= 2 && PKG_OK.test(a[1]); });
+    var box = $("mlist"); box.replaceChildren(); $("mrestore").hidden = rows.length === 0; setBadge("badge", rows.length);
     if (!rows.length) { box.appendChild(el("div", "empty", "No restrictions yet.")); return; }
     rows.forEach(function (a) {
-      var row = el("div", "row"), head = el("div", "rhead");
-      var av = el("div", "av", niceName(a[1]).charAt(0)); av.style.background = "hsl(" + hue(a[1]) + " 45% 38%)";
-      var main = el("div", "rmain"), title = el("div", "rtitle", niceName(a[1]));
+      var row = el("div", "row"), head = el("div", "rhead"), main = el("div", "rmain"), title = el("div", "rtitle", niceName(a[1]));
       title.appendChild(el("span", a[0] === "B" ? "tag" : a[0] === "F" ? "tag fz" : "tag lm", a[0] === "B" ? "BLOCKED" : a[0] === "F" ? "FROZEN" : "LIMITED"));
       main.appendChild(title); main.appendChild(el("div", "rpkg", a[1]));
-      var btn = el("button", "ghost", "Restore");
-      btn.addEventListener("click", function () { act(a[0] === "B" ? "unblock" : a[0] === "F" ? "unfreeze" : "unlimit", a[1]); });
-      head.appendChild(av); head.appendChild(main); head.appendChild(btn);
-      row.appendChild(head); box.appendChild(row);
+      var btn = el("button", "ghost", "Restore"); btn.addEventListener("click", function () { act(a[0] === "B" ? "unblock" : a[0] === "F" ? "unfreeze" : "unlimit", a[1]); });
+      head.appendChild(avatar(a[1])); head.appendChild(main); head.appendChild(btn); row.appendChild(head); box.appendChild(row);
     });
   }
 
-  async function refreshAll() {
-    await loadStatus();
-    await Promise.all([loadList(), loadManaged()]);
+  // ---- ALERTS + usage + export ----
+  async function loadAlerts() {
+    var unread = parseInt((await ly("alerts-unread")).stdout, 10) || 0;
+    var rows = lines((await ly("alerts 60")).stdout).map(function (l) { return l.split("\t"); }).filter(function (a) { return a.length >= 4; });
+    var box = $("alist"); box.replaceChildren();
+    if (!rows.length) box.appendChild(el("div", "empty", "No alerts yet. You will see heat warnings, new apps and your daily report here."));
+    rows.forEach(function (a, i) {
+      var row = el("div", "al" + (i < unread ? " unread" : "")), h = el("div", "h");
+      var lab = a[1] === "heat" ? ["HEAT", "tag"] : a[1] === "newapp" ? ["NEW APP", "tag new"] : a[1] === "daily" ? ["REPORT", "tag daily"] : [String(a[1]).toUpperCase(), "tag idle"];
+      h.appendChild(el("span", lab[1], lab[0])); h.appendChild(el("small", "", fmtWhen(+a[0]))); row.appendChild(h); row.appendChild(el("p", "", a[3])); box.appendChild(row);
+    });
+    if (unread > 0) { await ly("alerts-read"); setBadge("abadge", 0); }
+    loadUsage();
+  }
+  async function loadUsage() {
+    var rows = lines((await ly("usage " + usageW)).stdout).map(function (l) { return l.split("\t"); }), box = $("ulist"); box.replaceChildren();
+    if (!rows.length) { box.appendChild(el("div", "empty", "Nothing counted yet. It starts after an app is seen on the network.")); return; }
+    var max = Math.max.apply(null, rows.map(function (a) { return +a[0] || 1; }));
+    rows.forEach(function (a) {
+      var row = el("div", "row"), head = el("div", "rhead"), main = el("div", "rmain"), title = el("div", "rtitle", niceName(a[1]));
+      main.appendChild(title); main.appendChild(el("div", "rpkg", a[1]));
+      var bar = el("div", "bar"), fill = el("i"); fill.style.width = Math.max(3, Math.round((+a[0] / max) * 100)) + "%"; bar.appendChild(fill); main.appendChild(bar);
+      head.appendChild(avatar(a[1])); head.appendChild(main); head.appendChild(el("b", "bytes", fmtBytes(a[0]))); row.appendChild(head); box.appendChild(row);
+    });
   }
 
+  // ---- settings helpers ----
+  async function runDiag() {
+    var box = $("dlist"); box.replaceChildren(el("div", "empty", "Checking..."));
+    var rows = lines((await ly("diag")).stdout).map(function (l) { return l.split("|"); }).filter(function (a) { return a.length >= 3; });
+    box.replaceChildren();
+    rows.forEach(function (a) {
+      var r = el("div", "dl"), d = el("span", "d " + a[1]), t = el("div"); t.appendChild(el("div", "", a[0])); t.appendChild(el("small", "", a.slice(2).join("|")));
+      r.appendChild(d); r.appendChild(t); box.appendChild(r);
+    });
+  }
   async function setCfg(key, val, label) {
     var r = await ly("setcfg " + key + " " + val);
-    toast(r.stdout.indexOf("running=") !== -1 ? label : "Could not save that setting");
-    refreshAll();
+    toast(r.stdout.indexOf("running=") !== -1 ? label : "Could not save that setting"); refreshAll();
   }
-  async function togglePause(wantPause) {
-    await ly(wantPause ? "pause" : "resume");
-    toast(wantPause ? "Recording paused" : "Recording resumed");
-    refreshAll();
-  }
+  async function togglePause(p) { await ly(p ? "pause" : "resume"); toast(p ? "Everything paused" : "Resumed"); refreshAll(); }
+  async function refreshAll() { await loadStatus(); await Promise.all([loadList(), loadManaged()]); }
 
   // ---- wiring ----
   initDock();
+  loaders.home = refreshAll; loaders.batt = loadBattery; loaders.rules = loadRulesTab; loaders.alerts = loadAlerts; loaders.set = loadStatus;
   window.addEventListener("resize", movePill);
   $("bpause").addEventListener("click", function () { togglePause(!state.paused); });
   $("tpause").addEventListener("change", function (e) { togglePause(e.target.checked); });
   $("thide").addEventListener("change", function (e) { setCfg("HIDE_SYSTEM", e.target.checked ? 1 : 0, e.target.checked ? "Hiding system entries" : "Showing system entries"); });
   $("intsel").addEventListener("change", function (e) { setCfg("INTERVAL", e.target.value, "Scanning every " + e.target.value + "s"); });
   $("sizesel").addEventListener("change", function (e) { setCfg("MAXKB", e.target.value, "Log limit saved"); });
+  $("batsel").addEventListener("change", function (e) { setCfg("BAT_SEC", e.target.value, e.target.value === "0" ? "Battery sampling off" : "Sampling every " + (e.target.value / 60) + " min"); });
+  $("heatsel").addEventListener("change", function (e) { setCfg("HEAT_C", e.target.value, "Heat alert at " + e.target.value + " C"); });
+  $("tautoheat").addEventListener("change", function (e) { setCfg("AUTO_HEAT", e.target.checked ? 1 : 0, e.target.checked ? "Auto-limit on heat is on" : "Auto-limit on heat is off"); });
+  $("tnotify").addEventListener("change", function (e) { setCfg("NOTIFY", e.target.checked ? 1 : 0, e.target.checked ? "Notifications on" : "Notifications off"); });
+  $("tnewapp").addEventListener("change", function (e) { setCfg("NEWAPP", e.target.checked ? 1 : 0, e.target.checked ? "New app alerts on" : "New app alerts off"); });
+  $("dailysel").addEventListener("change", function (e) { setCfg("DAILY_AT", e.target.value, e.target.value === "99" ? "Daily report off" : "Daily report at " + e.target.value + ":00"); });
+  $("themesel").addEventListener("change", function (e) { store("ly_theme", e.target.value); applyTheme(e.target.value); toast(e.target.value === "classic" ? "Classic dark" : "AMOLED black"); });
   $("tlens").addEventListener("change", function (e) { lensOn = e.target.checked; store("ly_lens", lensOn ? "1" : "0"); lensW = 0; movePill(); if (!lensOn) $("pill").classList.remove("refract"); toast(lensOn ? "Lens refraction on" : "Lens refraction off"); });
   $("tauto").addEventListener("change", function (e) { autoRefresh = e.target.checked; store("ly_auto", autoRefresh ? "1" : "0"); toast(autoRefresh ? "Auto-refresh on" : "Auto-refresh off"); });
   $("brefresh").addEventListener("click", function () { refreshAll(); toast("Refreshed"); });
+  $("bdiag").addEventListener("click", runDiag);
   $("search").addEventListener("input", applySearch);
   armed($("bclear"), "Tap again to clear", async function () { await ly("clear"); toast("Log cleared"); refreshAll(); });
-  armed($("brestore"), "Tap again to confirm", async function () { await ly("restore-all"); toast("All restrictions removed"); refreshAll(); });
+  armed($("brestore"), "Tap again to confirm", async function () { await ly("restore-all"); toast("All restrictions removed"); refreshAll(); loadManaged(); });
+  armed($("baclear"), "Tap again to clear", async function () { await ly("alerts-clear"); toast("Alerts cleared"); loadAlerts(); });
+  $("bareport").addEventListener("click", async function () { await ly("daily-now"); toast("Report added to alerts"); loadAlerts(); });
+  $("bexport").addEventListener("click", async function () { var f = firstLine(await ly("export")); toast(f.indexOf("ok:") === 0 ? "Saved: " + f.slice(3) : f.indexOf("fail:") === 0 ? f.slice(5) : "Export failed"); });
+  $("bnewrule").addEventListener("click", function () { $("rform").hidden = !$("rform").hidden; });
+  $("rcancel").addEventListener("click", function () { $("rform").hidden = true; });
+  $("radd").addEventListener("click", addRule);
+  $("ract").addEventListener("change", function (e) { $("rnet").disabled = e.target.value !== "block"; });
+  $("rwin").addEventListener("change", function (e) { $("rwinbox").hidden = !e.target.checked; });
+  $("rcon").addEventListener("change", function (e) { $("rconbox").hidden = !e.target.checked; });
   $("chips").addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest(".chip") : null;
-    if (!b) return;
+    var b = e.target.closest ? e.target.closest(".chip") : null; if (!b) return;
     range = parseInt(b.getAttribute("data-m"), 10) || 60;
-    var chips = document.querySelectorAll(".chip");
-    for (var i = 0; i < chips.length; i++) chips[i].classList.toggle("on", chips[i] === b);
+    var chips = document.querySelectorAll("#chips .chip"); for (var i = 0; i < chips.length; i++) chips[i].classList.toggle("on", chips[i] === b);
     openPkg = null; loadList();
   });
+  $("bchips").addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest(".chip") : null; if (!b) return;
+    battH = parseInt(b.getAttribute("data-h"), 10) || 6;
+    var chips = document.querySelectorAll("#bchips .chip"); for (var i = 0; i < chips.length; i++) chips[i].classList.toggle("on", chips[i] === b);
+    loadBattery();
+  });
+  $("uchips").addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest(".chip") : null; if (!b) return;
+    usageW = b.getAttribute("data-w") || "today";
+    var chips = document.querySelectorAll("#uchips .chip"); for (var i = 0; i < chips.length; i++) chips[i].classList.toggle("on", chips[i] === b);
+    loadUsage();
+  });
 
-  autoRefresh = store("ly_auto") !== "0";
-  $("tauto").checked = autoRefresh;
+  autoRefresh = store("ly_auto") !== "0"; $("tauto").checked = autoRefresh;
   lensOn = store("ly_lens") !== "0"; $("tlens").checked = lensOn;
-  movePill();
-  setTimeout(movePill, 150);
+  $("themesel").value = store("ly_theme") === "classic" ? "classic" : "amoled";
+  movePill(); setTimeout(movePill, 150);
   refreshAll();
-  setInterval(function () { if (autoRefresh && tab === "home" && !document.hidden) refreshAll(); }, 30000);
+  setInterval(function () { if (autoRefresh && !document.hidden && loaders[tab] && tab !== "set") loaders[tab](); }, 30000);
 })();
 </script>
 </body>

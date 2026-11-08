@@ -12,7 +12,7 @@ cd "$(dirname "$0")"
 [ -d .git ] || git init
 git checkout -B main
 git add -A
-git -c user.name="$USER_NAME" -c user.email="$USER_NAME@users.noreply.github.com" commit -m "Lensyard v1.4.0" || true
+git -c user.name="$USER_NAME" -c user.email="$USER_NAME@users.noreply.github.com" commit -m "Lensyard v1.3.3" || true
 git remote remove origin 2>/dev/null || true
 git remote add origin "https://github.com/$USER_NAME/$REPO.git"
 git push -u origin main

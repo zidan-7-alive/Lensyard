@@ -1,7 +1,8 @@
 id=lensyard
 name=Lensyard
-version=v1.4.0
-versionCode=9
+version=v2.2.0
+versionCode=10
 author=zidan-7-alive
-description=Flight recorder for your phone. Logs which app opens network connections, so you can see who did it.
+description=Flight recorder for rooted Android: see which app uses the network, wakes the phone or heats it up, then block, limit or freeze it.
+updateJson=https://raw.githubusercontent.com/zidan-7-alive/Lensyard/main/update.json
 banner=banner.jpg

@@ -1,6 +1,6 @@
 #!/system/bin/sh
 # Lensyard control script. Used by the WebUI, the action button and the optional terminal command.
-MODDIR=${0%/*}
+MODDIR=${0%/*}; [ "$MODDIR" = "$0" ] && MODDIR=.
 . "$MODDIR/common.sh"
 mkdir -p "$DATA"
 BL_FILE=$DATA/blocked.list
@@ -15,7 +15,7 @@ list_add() { grep -qx "$2" "$1" 2>/dev/null || echo "$2" >> "$1"; }
 list_del() { grep -vx "$2" "$1" > "$1.tmp" 2>/dev/null; mv "$1.tmp" "$1"; }
 is_running() { PID=$(cat "$DATA/pid" 2>/dev/null); [ -n "$PID" ] && kill -0 "$PID" 2>/dev/null; }
 
-uid_of() { $AWK -v p="$1" '$1 == p { print $2; exit }' /data/system/packages.list; }
+uid_of() { $AWK -v p="$1" '$1 == p { print $2; exit }' "$PKGLIST"; }
 
 # ---- internet block: iptables owner-match rules in our own chain (works on Wi-Fi and mobile) ----
 ipt_ready() {
@@ -92,14 +92,17 @@ do_unlimit() {
   am set-standby-bucket "$1" active >/dev/null 2>&1
   list_del "$LM_FILE" "$1"; echo ok
 }
-# re-apply saved blocks after a reboot (firewall rules do not survive it)
+# after a reboot: firewall rules and counters are gone, so rebuild them from the saved state
 do_reapply() {
-  [ -s "$BL_FILE" ] || return 0
-  ipt_ready || return 1
-  while read -r p; do
-    valid_pkg "$p" || continue
-    U=$(uid_of "$p"); [ -n "$U" ] && block_uid "$U" >/dev/null
-  done < "$BL_FILE"
+  rm -f "$DATA/rules.applied" "$DATA/acct.uids" "$DATA/usage.last"
+  if [ -s "$BL_FILE" ] && ipt_ready; then
+    while read -r p; do
+      valid_pkg "$p" || continue
+      U=$(uid_of "$p"); [ -n "$U" ] && block_uid "$U" >/dev/null
+    done < "$BL_FILE"
+  fi
+  rules_eval
+  acct_sync
 }
 
 start_rec() {
@@ -123,7 +126,10 @@ stop_rec() {
   fi
   rm -f "$DATA/pid"
 }
-write_cfg() { printf 'INTERVAL=%s\nMAXKB=%s\nHIDE_SYSTEM=%s\n' "$INTERVAL" "$MAXKB" "$HIDE_SYSTEM" > "$DATA/config"; }
+write_cfg() {
+  printf 'INTERVAL=%s\nMAXKB=%s\nHIDE_SYSTEM=%s\nBAT_SEC=%s\nHEAT_C=%s\nAUTO_HEAT=%s\nNOTIFY=%s\nNEWAPP=%s\nDAILY_AT=%s\n' \
+    "$INTERVAL" "$MAXKB" "$HIDE_SYSTEM" "$BAT_SEC" "$HEAT_C" "$AUTO_HEAT" "$NOTIFY" "$NEWAPP" "$DAILY_AT" > "$DATA/config"
+}
 num_in() { case "$1" in ""|*[!0-9]*) return 1 ;; esac; [ "$1" -ge "$2" ] && [ "$1" -le "$3" ]; }
 
 # conns <TAB> pkg <TAB> servers <TAB> minutes-since-last <TAB> blocked <TAB> frozen
@@ -160,6 +166,9 @@ status_kv() {
   echo "interval=$INTERVAL"
   echo "maxkb=$MAXKB"
   echo "hide=$HIDE_SYSTEM"
+  echo "version=$(grep '^version=' "$MODDIR/module.prop" 2>/dev/null | cut -d= -f2)"
+  echo "bat_sec=$BAT_SEC"; echo "heat_c=$HEAT_C"; echo "auto_heat=$AUTO_HEAT"; echo "notify=$NOTIFY"
+  echo "newapp=$NEWAPP"; echo "daily_at=$DAILY_AT"; echo "unread=$(alerts_unread)"
   if [ -z "$AWK" ]; then echo "noawk=1"; else echo "noawk=0"; fi
 }
 
@@ -179,6 +188,21 @@ who() {
   done
 }
 
+for f in power batt alerts rules usage diag; do . "$MODDIR/lib/$f.sh"; done
+
+# Everything that runs about once a minute (called by the recorder)
+minute() {
+  NOW=$(date +%s)
+  if [ "$BAT_SEC" -gt 0 ] 2>/dev/null; then
+    last=$(cat "$DATA/bat.last" 2>/dev/null)
+    if [ $((NOW - ${last:-0})) -ge $((BAT_SEC - 5)) ]; then
+      echo "$NOW" > "$DATA/bat.last"
+      batt_sample "$NOW"; wake_sample "$NOW"; heat_check "$NOW"
+    fi
+  fi
+  rules_eval; newapp_check; acct_sync; usage_update; daily_check; trim
+}
+
 need_pkg() { valid_pkg "$1" || { echo "fail:invalid package name"; exit 1; }; }
 
 case "$1" in
@@ -193,14 +217,21 @@ case "$1" in
   restart)  stop_rec; start_rec; status_kv ;;
   clear)    : > "$LOG"; echo "cleared" ;;
   setcfg)
+    RESTART=0
     case "$2" in
-      INTERVAL)    num_in "$3" 2 3600 || { echo "bad value"; exit 1; }; INTERVAL=$3 ;;
+      INTERVAL)    num_in "$3" 2 3600 || { echo "bad value"; exit 1; }; INTERVAL=$3; RESTART=1 ;;
       MAXKB)       num_in "$3" 100 10240 || { echo "bad value"; exit 1; }; MAXKB=$3 ;;
-      HIDE_SYSTEM) { [ "$3" = 0 ] || [ "$3" = 1 ]; } || { echo "bad value"; exit 1; }; HIDE_SYSTEM=$3 ;;
+      HIDE_SYSTEM) { [ "$3" = 0 ] || [ "$3" = 1 ]; } || { echo "bad value"; exit 1; }; HIDE_SYSTEM=$3; RESTART=1 ;;
+      BAT_SEC)     { [ "$3" = 0 ] || num_in "$3" 60 3600; } || { echo "bad value"; exit 1; }; BAT_SEC=$3 ;;
+      HEAT_C)      num_in "$3" 35 55 || { echo "bad value"; exit 1; }; HEAT_C=$3 ;;
+      AUTO_HEAT)   { [ "$3" = 0 ] || [ "$3" = 1 ]; } || { echo "bad value"; exit 1; }; AUTO_HEAT=$3 ;;
+      NOTIFY)      { [ "$3" = 0 ] || [ "$3" = 1 ]; } || { echo "bad value"; exit 1; }; NOTIFY=$3 ;;
+      NEWAPP)      { [ "$3" = 0 ] || [ "$3" = 1 ]; } || { echo "bad value"; exit 1; }; NEWAPP=$3 ;;
+      DAILY_AT)    { [ "$3" = 99 ] || num_in "$3" 0 23; } || { echo "bad value"; exit 1; }; DAILY_AT=$3 ;;
       *) echo "bad key"; exit 1 ;;
     esac
     write_cfg
-    if is_running; then stop_rec; start_rec; fi
+    if [ "$RESTART" = 1 ] && is_running; then stop_rec; start_rec; fi
     status_kv ;;
   pause)    touch "$DATA/paused"; stop_rec; status_kv ;;
   resume)   rm -f "$DATA/paused"; start_rec; status_kv ;;
@@ -216,5 +247,22 @@ case "$1" in
   limit)    need_pkg "$2"; do_limit "$2" ;;
   unlimit)  need_pkg "$2"; do_unlimit "$2" ;;
   reapply)  do_reapply ;;
+  minute)   minute ;;
+  version)  grep '^version=' "$MODDIR/module.prop" | cut -d= -f2 ;;
+  batt-kv)  batt_kv ;;
+  batt-series) batt_series "$2" ;;
+  wake-top) wake_top "$2" ;;
+  rules)    rules_list ;;
+  rule-add) rule_add "$2" "$3" "$4" "$5" "$6" "$7" ;;
+  rule-del) rule_del "$2" ;;
+  rules-eval) rules_eval ;;
+  alerts)   alerts_list "$2" ;;
+  alerts-unread) alerts_unread ;;
+  alerts-read) date +%s > "$DATA/alerts.read"; echo ok ;;
+  alerts-clear) : > "$DATA/alerts.log"; date +%s > "$DATA/alerts.read"; echo ok ;;
+  daily-now) daily_report; echo ok ;;
+  usage)    usage_top "$2" ;;
+  export)   do_export ;;
+  diag)     run_diag ;;
   *) echo "Usage: who [min] | status | start | pause | resume | restart | block|unblock|freeze|unfreeze <pkg>" ;;
 esac
