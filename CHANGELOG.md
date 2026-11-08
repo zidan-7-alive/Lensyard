@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.2.1
+- Test OTA
+
 ## v2.2.0
 Three big updates in one release, plus over-the-air updates and a new look.
 
