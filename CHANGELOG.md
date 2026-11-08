@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.2.2
+- New bottom bar like the manager's
+
 ## v2.2.1
 - Test OTA
 

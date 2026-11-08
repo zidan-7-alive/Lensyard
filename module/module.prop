@@ -1,7 +1,7 @@
 id=lensyard
 name=Lensyard
-version=v2.2.1
-versionCode=11
+version=v2.2.2
+versionCode=12
 author=zidan-7-alive
 description=Flight recorder for rooted Android: see which app uses the network, wakes the phone or heats it up, then block, limit or freeze it.
 updateJson=https://raw.githubusercontent.com/zidan-7-alive/Lensyard/main/update.json
